@@ -39,13 +39,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *            | LCTL | LGUI | NAV  | SYM  | / Enter /       \Space \  | SYM  |  NAV | LALT | RCTL |
  *            |      |      |      |      |/       /         \      \ |      |      |      |      |
  *            `----------------------------------'           '------''---------------------------'
- */
-[_NEO] = LAYOUT(
+ [_NEO] = LAYOUT(
     TG(_ADJUST), KC_1,   KC_2,    KC_3,    KC_4,        KC_5,                               KC_6,     KC_7,         KC_8,    KC_9,    KC_0,    KC_BSPC,
     KC_TAB,      DE_X,   DE_V,    DE_L,    DE_C,        DE_W,                               DE_K,     DE_H,         DE_G,    DE_F,    DE_Q,    DE_SS,
     KC_ESC,      DE_U,   DE_I,    DE_A,    DE_E,        DE_O,                               DE_S,     DE_N,         DE_R,    DE_T,    DE_D,    DE_Y,
     KC_LSFT,     DE_UDIA,DE_ODIA, DE_ADIA, DE_P,        DE_Z,      KC_MUTE,        KC_MPLY, DE_B,     DE_M,         DE_COMM, DE_DOT,  DE_J,    KC_RSFT,
                          KC_LCTL, KC_LGUI, MO(_NAVNUM), MO(_SYMB), LSFT_T(KC_ENT), RSFT_T(KC_SPC),  MO(_SYMB), MO(_NAVNUM), KC_LALT, KC_RCTL
+),
+ */
+[_NEO] = LAYOUT(
+    TG(_ADJUST), KC_1,   KC_2,    KC_3,    KC_4,        KC_5,                               KC_6,     KC_7,         KC_8,    KC_9,    KC_0,    KC_BSPC,
+    KC_TAB,      DE_X,   DE_V,    DE_L,    DE_C,        DE_W,                               DE_K,     DE_H,         DE_G,    DE_F,    DE_Q,    DE_SS,
+    LT(_SYMB, KC_ESC),  LSFT_T(DE_U),   DE_I,    DE_A,    DE_E,        DE_O,                               DE_S,     DE_N,         DE_R,    DE_T,    RSFT_T(DE_D),    LT(_SYMB, DE_Y),
+    KC_LSFT,     DE_UDIA,DE_ODIA, DE_ADIA, DE_P,        DE_Z,      KC_MUTE,        KC_MPLY, DE_B,     DE_M,         DE_COMM, DE_DOT,  DE_J,    KC_RSFT,
+                         KC_LGUI, MO(_NAVNUM), MO(_SYMB), LSFT_T(KC_ENT), KC_LCTL, KC_RCTL,  RSFT_T(KC_SPC), MO(_SYMB), MO(_NAVNUM), KC_LALT
 ),
 
 /* Keymap 1: Basic layer
@@ -145,10 +152,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 #if defined(ENCODER_MAP_ENABLE)
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
-    [_NEO] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
-    [_QWERTZ] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
-    [_SYMB] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
-    [_NAVNUM] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
-    [_ADJUST] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT) },
+    [_NEO] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(LGUI(LCTL(KC_LEFT)), LGUI(LCTL(KC_RGHT))) }, // LSFT(LCTL(KC_LEFT))
+    [_QWERTZ] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(MS_WHLU, MS_WHLD) },
+    [_SYMB] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(MS_WHLU, MS_WHLD) },
+    [_NAVNUM] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(MS_WHLU, MS_WHLD) },
+    [_ADJUST] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(MS_WHLU, MS_WHLD) },
 };
 #endif
