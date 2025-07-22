@@ -12,6 +12,38 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+// keymap setting and etc...
+
+// store the state
+static bool _is_key_locked = false;
+
+void keyboard_post_init_user(void) {
+  // need to stop effects and animations
+  rgb_matrix_mode(RGB_MATRIX_NONE);
+  rgb_matrix_sethsv(HSV_OFF);
+}
+
+void rgb_matrix_indicators_user(void) {
+  int key_index = 10; // set your key index here
+  if (_is_key_locked) {
+    rgb_matrix_set_color(key_index, RGB_WHITE);
+  } else {
+    rgb_matrix_set_color(key_index, RGB_BLACK);
+  }
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case KC_A: // set your keycode here
+      if (record->event.pressed) {
+        _is_key_locked = !_is_key_locked;
+      }
+      break;
+  }
+  return true;
+}
+
  */
 #include QMK_KEYBOARD_H
 #include "keymap_extras/keymap_german.h"
@@ -23,6 +55,7 @@ enum sofle_layers {
     _NAVNUM,
     _ADJUST,
 };
+
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* Keymap 0: Basic layer
@@ -48,11 +81,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
  */
 [_NEO] = LAYOUT(
-    TG(_ADJUST), KC_1,   KC_2,    KC_3,    KC_4,        KC_5,                               KC_6,     KC_7,         KC_8,    KC_9,    KC_0,    KC_BSPC,
-    KC_TAB,      DE_X,   DE_V,    DE_L,    DE_C,        DE_W,                               DE_K,     DE_H,         DE_G,    DE_F,    DE_Q,    DE_SS,
-    LT(_SYMB, KC_ESC),  LSFT_T(DE_U),   DE_I,    DE_A,    DE_E,        DE_O,                               DE_S,     DE_N,         DE_R,    DE_T,    RSFT_T(DE_D),    LT(_SYMB, DE_Y),
-    KC_LSFT,     DE_UDIA,DE_ODIA, DE_ADIA, DE_P,        DE_Z,      KC_MUTE,        KC_MPLY, DE_B,     DE_M,         DE_COMM, DE_DOT,  DE_J,    KC_RSFT,
-                         KC_LGUI, MO(_NAVNUM), MO(_SYMB), LSFT_T(KC_ENT), KC_LCTL, KC_RCTL,  RSFT_T(KC_SPC), MO(_SYMB), MO(_NAVNUM), KC_LALT
+    TG(_ADJUST),       KC_1,         KC_2,    KC_3,    KC_4,   KC_5,                           KC_6,     KC_7,         KC_8,    KC_9,    KC_0,    KC_BSPC,
+    KC_TAB,            DE_X,         DE_V,    DE_L,    DE_C,   DE_W,                           DE_K,     DE_H,         DE_G,    DE_F,    DE_Q,    DE_SS,
+    LT(_SYMB, KC_ESC), LSFT_T(DE_U), DE_I,    DE_A,    DE_E,   DE_O,                           DE_S,     DE_N,         DE_R,    DE_T,    RSFT_T(DE_D),    LT(_SYMB, DE_Y),
+    KC_LSFT,           DE_UDIA,      DE_ODIA, DE_ADIA, DE_P,   DE_Z,      KC_MUTE,    KC_MPLY, DE_B,     DE_M,         DE_COMM, DE_DOT,  DE_J,    KC_RSFT,
+                         KC_LGUI, MO(_NAVNUM), MO(_SYMB), LSFT_T(KC_ENT), KC_LCTL,    KC_RCTL, RSFT_T(KC_SPC), MO(_SYMB), MO(_NAVNUM), KC_LALT
 ),
 
 /* Keymap 1: Basic layer
@@ -122,15 +155,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TRNS, KC_PGUP, KC_BSPC, KC_UP,   KC_DEL,   KC_PGDN,                   KC_TRNS,  DE_7,    DE_8,    DE_9,    DE_PLUS,  DE_MINS,
     KC_TRNS, KC_HOME, KC_LEFT, KC_DOWN, KC_RGHT,  KC_END,                    KC_TRNS,  DE_4,    DE_5,    DE_6,    DE_COMM,  DE_DOT,
     KC_TRNS, KC_TRNS, KC_TAB,  KC_INS,  KC_ENTER, KC_TRNS, KC_TRNS, KC_TRNS, DE_COLN,  DE_1,    DE_2,    DE_3,    DE_SCLN,  KC_TRNS,
-                      KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, DE_0,    KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS
+                      KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, DE_0,    DE_0,  KC_TRNS, KC_TRNS, KC_TRNS
 ),
 
 /* Keymap 4: Presets / Mouse
  * Presets / Mouse
  * ,-----------------------------------------.                    ,-----------------------------------------.
- * |      |      |      |      |      |      |                    |      |      |      |      |      | BOOT |
+ * |      | RGB T| RGB> | RGB< |      |      |                    |      |      |      |      |      | BOOT |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * | NEO  |      |      | MsUp |      |      |                    |      |      |      |      |      |      |
+ * | NEO  |      |      | MsUp |      |      |                    |      |      |      |      |      |CLEAR |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * | QWERT|      | MsL  |MsDwn |  MsR |      |-------.    ,-------|      | Lclk | Rclk |      |      |      |
  * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
@@ -141,14 +174,114 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *            `----------------------------------'           '------''---------------------------'
  */
 [_ADJUST] = LAYOUT(
-    KC_TRNS, RM_TOGG, RM_NEXT, RM_PREV, KC_TRNS, KC_TRNS,                   KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  QK_BOOT,
-    DF(_NEO), KC_TRNS, KC_TRNS, KC_MS_U, KC_TRNS, KC_TRNS,                   KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS,
-    DF(_QWERTZ), KC_TRNS, KC_MS_L, KC_MS_D, KC_MS_R, KC_TRNS,                   KC_TRNS,  KC_BTN1, KC_BTN2, KC_TRNS, KC_TRNS,  KC_TRNS,
+    KC_TRNS,     RM_TOGG, RM_NEXT, RM_PREV, KC_TRNS, KC_TRNS,               KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  QK_BOOT,
+    DF(_NEO),    KC_TRNS, KC_TRNS, KC_MS_U, KC_TRNS, KC_TRNS,               KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  QK_CLEAR_EEPROM,
+    DF(_QWERTZ), KC_TRNS, KC_MS_L, KC_MS_D, KC_MS_R, KC_TRNS,               KC_TRNS,  KC_BTN1, KC_BTN2, KC_TRNS, KC_TRNS,  KC_TRNS,
     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS,
                       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS
 )
 
 };
+
+/* RGB Matrix
+ * ,-----------------------------------------.                    ,-----------------------------------------.
+ * |  28  |  21  |  20  |  11  |  10  |  0   |                    |  29  |  39  |  40  |  49  |  50  |  58  |
+ * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
+ * |  27  |  22  |  19  |  12  |   9  |  1   |                    |  30  |  38  |  41  |  48  |  51  |  56  |
+ * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
+ * |  26  |  23  |  18  |  13  |   8  |  2   |-------.    ,-------|  31  |  37  |  42 |   47  |  52  |  55  |
+ * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
+ * |  25  |  24  |  17  |  14  |   7  |  3   |-------|    |-------|  32  |  36  |  43  |  46  |  53  |  54  |
+ * `-----------------------------------------/       /     \      \-----------------------------------------'
+ *            |      |      |      |      | /   4   /       \  33  \  |      |      |      |      |
+ *            |  16  |  15  |   6  |   5  |/       /         \      \ |  34  |  35  |   44 |   45 |
+ *            `----------------------------------'           '------''---------------------------'
+ */
+
+void keyboard_post_init_user(void) {
+  // need to stop effects and animations
+  rgb_matrix_mode(RGB_MATRIX_NONE);
+  rgb_matrix_sethsv(HSV_OFF);
+}
+
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    //rgb_matrix_mode(RGB_MATRIX_NONE);
+    switch(get_highest_layer(layer_state|default_layer_state)) {
+        case _NEO:
+            rgb_matrix_set_color(8, RGB_BLUE);
+            rgb_matrix_set_color(13, RGB_BLUE);
+            rgb_matrix_set_color(18, RGB_BLUE);
+            rgb_matrix_set_color(23, RGB_BLUE);
+
+            rgb_matrix_set_color(37, RGB_BLUE);
+            rgb_matrix_set_color(42, RGB_BLUE);
+            rgb_matrix_set_color(47, RGB_BLUE);
+            rgb_matrix_set_color(52, RGB_BLUE);
+
+            //rgb_matrix_set_color(50, RGB_BLUE);
+            break;
+        case _SYMB:
+            rgb_matrix_set_color(37, RGB_BLACK);
+            rgb_matrix_set_color(42, RGB_BLACK);
+            rgb_matrix_set_color(47, RGB_BLACK);
+            rgb_matrix_set_color(52, RGB_BLACK);
+            rgb_matrix_set_color(9, RGB_YELLOW);
+            rgb_matrix_set_color(12, RGB_YELLOW);
+            break;
+        case _NAVNUM:
+            rgb_matrix_set_color(12, RGB_RED);
+            rgb_matrix_set_color(13, RGB_RED);
+            rgb_matrix_set_color(18, RGB_RED);
+            rgb_matrix_set_color(8, RGB_RED);
+
+            rgb_matrix_set_color(38, RGB_ORANGE);
+            rgb_matrix_set_color(41, RGB_ORANGE);
+            rgb_matrix_set_color(48, RGB_ORANGE);
+            rgb_matrix_set_color(37, RGB_ORANGE);
+            rgb_matrix_set_color(42, RGB_ORANGE);
+            rgb_matrix_set_color(47, RGB_ORANGE);
+            rgb_matrix_set_color(36, RGB_ORANGE);
+            rgb_matrix_set_color(43, RGB_ORANGE);
+            rgb_matrix_set_color(46, RGB_ORANGE);
+            rgb_matrix_set_color(34, RGB_ORANGE);
+
+             //rgb_matrix_set_color(50, RGB_RED);
+            break;
+        default:
+            break;
+    }
+
+    /*
+    if (HAS_FLAGS(g_led_config.flags[35], LED_FLAG_MODIFIER)) { // LED 35 = erste LED rechts
+        rgb_matrix_set_color(35, 255, 0, 0); // Leuchtet rot
+    }
+  rgb_matrix_set_color(8, RGB_WHITE);
+  rgb_matrix_set_color(13, RGB_WHITE);
+  rgb_matrix_set_color(18, RGB_WHITE);
+  rgb_matrix_set_color(23, RGB_WHITE);
+  rgb_matrix_set_color(30, RGB_WHITE);
+  rgb_matrix_set_color(36, RGB_BLACK);
+
+    rgb_matrix_set_color(30, RGB_WHITE);
+    rgb_matrix_set_color(0, RGB_WHITE);
+    rgb_matrix_set_color(29, RGB_BLACK);
+  
+  for (uint8_t i = led_min; i < 35; i++) {
+    switch(get_highest_layer(layer_state|default_layer_state)) {
+        case _NEO:
+            rgb_matrix_set_color(i, RGB_BLUE);
+            break;
+        case _SYMB:
+            rgb_matrix_set_color(i, RGB_YELLOW);
+            break;
+        default:
+            break;
+    }
+  }
+*/
+   return false;
+}
+
 
 #if defined(ENCODER_MAP_ENABLE)
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
